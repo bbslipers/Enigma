@@ -1,2 +1,5 @@
 # Enigma
-It is an enigma
+Minecraft EnigmaScript
+
+# Wiki
+https://www.mcjty.eu/docs/mods/enigma/
