@@ -16,15 +16,15 @@ import net.minecraft.util.text.TextFormatting;
 
 import java.util.Map;
 import java.util.UUID;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
-
-import static mcjty.enigma.varia.StringRegister.STRINGS;
 
 import org.json.JSONObject;
 import org.json.JSONException;
-
 import mcjty.enigma.web.Data;
+
+import mcjty.enigma.varia.BlockPosDim;
+import mcjty.enigma.parser.ObjectTools;
+import net.minecraft.util.math.BlockPos;
+import static mcjty.enigma.varia.StringRegister.STRINGS;
 
 public class CmdStates extends CommandBase {
     @Override
@@ -71,19 +71,30 @@ public class CmdStates extends CommandBase {
 
         for (Map.Entry<Integer, Object> entry : progress.getNamedVariables().entrySet()) {
             String name = STRINGS.get(entry.getKey());
-            JSONObject value = new JSONObject(entry.getValue());
-
-            try {
-                byte[] bytes = value.get("bytes");
-                if (bytes != null) {
-                    String stringFromBytes = new String(bytes, StandardCharsets.UTF_8);
-                    value.put("bytes",stringFromBytes);
-                }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            //String(value.get("bytes"), "UTF-8")
+            String value = ObjectTools.asStringSafe(entry.getValue());
             JSONVars.put(name, value);
+
+
+            if (value == "") {
+                JSONObject JSONValue = new JSONObject(entry.getValue());
+                try {
+                    if (JSONValue.get("pos") != null) {
+                        BlockPosDim BPDPos = (BlockPosDim)entry.getValue(); JSONObject JSONPos = new JSONObject();
+                        BlockPos BPos = BPDPos.getPos();
+                        JSONPos.put("x", BPos.getX()); JSONPos.put("y", BPos.getY()); JSONPos.put("z", BPos.getZ());                     
+                        JSONValue.put("pos", JSONPos);
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                JSONVars.put(name, JSONValue);
+
+            }
+            else {
+                JSONVars.put(name, value);
+            }
         }
 
         JSONWebResponse.put("vars", JSONVars);
