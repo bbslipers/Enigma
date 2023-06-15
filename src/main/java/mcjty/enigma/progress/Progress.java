@@ -77,6 +77,10 @@ public class Progress {
         return states;
     }
 
+    public InternedKeyMap<Object> getNamedVariables() {
+        return namedVariables;
+    }    
+
     public void addNamedSensor(String name, Sensor sensor) {
         namedSensors.put(name, sensor);
     }

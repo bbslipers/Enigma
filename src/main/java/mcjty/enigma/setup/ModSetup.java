@@ -6,6 +6,7 @@ import mcjty.enigma.blocks.ModBlocks;
 import mcjty.enigma.fxanim.FxAnimationHandler;
 import mcjty.enigma.items.ModItems;
 import mcjty.enigma.network.EnigmaMessages;
+import mcjty.enigma.web.Data;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.world.World;
 import net.minecraftforge.common.MinecraftForge;
@@ -28,7 +29,7 @@ public class ModSetup {
     private Logger logger;
 
     private Configuration mainConfig;
-
+    
     public void preInit(FMLPreInitializationEvent e) {
         logger = e.getModLog();
 
@@ -38,6 +39,8 @@ public class ModSetup {
 
         modConfigDir = e.getModConfigurationDirectory();
         mainConfig = new Configuration(new File(modConfigDir.getPath(), "enigma.cfg"));
+        Data.webPort = mainConfig.getInt("webPort", "main", 51397, 0, 65565,"Web port that should web interface have");
+        mainConfig.save();
 
         EnigmaMessages.registerMessages("enigma");
 
@@ -55,9 +58,6 @@ public class ModSetup {
         Configuration cfg = mainConfig;
         try {
             cfg.load();
-//            cfg.addCustomCategoryComment(GeneralConfiguration.CATEGORY_GENERAL, "General settings");
-
-//            GeneralConfiguration.init(cfg);
         } catch (Exception e1) {
             FMLLog.log(Level.ERROR, e1, "Problem loading config file!");
         } finally {

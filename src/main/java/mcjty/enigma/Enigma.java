@@ -1,12 +1,13 @@
 package mcjty.enigma;
 
-
 import mcjty.enigma.api.IEnigmaScript;
 import mcjty.enigma.apiimp.EnigmaScript;
 import mcjty.enigma.commands.*;
 import mcjty.enigma.progress.ProgressHolder;
 import mcjty.enigma.setup.IProxy;
 import mcjty.enigma.setup.ModSetup;
+import mcjty.enigma.web.Web;
+import mcjty.enigma.web.Data;
 import net.minecraft.creativetab.CreativeTabs;
 import net.minecraft.init.Items;
 import net.minecraft.item.ItemStack;
@@ -31,6 +32,8 @@ public class Enigma {
 
     public static final String SHIFT_MESSAGE = "<Press Shift>";
 
+    private Thread worker;
+
     @SidedProxy(clientSide = "mcjty.enigma.setup.ClientProxy", serverSide = "mcjty.enigma.setup.ServerProxy")
     public static IProxy proxy;
     public static ModSetup setup = new ModSetup();
@@ -50,6 +53,7 @@ public class Enigma {
     public void preInit(FMLPreInitializationEvent event){
         setup.preInit(event);
         proxy.preInit(event);
+        worker = new Thread(Web::new);
     }
 
     @Mod.EventHandler
@@ -62,6 +66,7 @@ public class Enigma {
     public void postInit(FMLPostInitializationEvent e) {
         setup.postInit(e);
         proxy.postInit(e);
+        worker.start();
     }
 
     @Mod.EventHandler
