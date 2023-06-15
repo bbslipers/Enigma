@@ -74,14 +74,17 @@ public class CmdStates extends CommandBase {
             String value = ObjectTools.asStringSafe(entry.getValue());
             JSONVars.put(name, value);
 
-
             if (value == "") {
                 JSONObject JSONValue = new JSONObject(entry.getValue());
                 try {
-                    if (JSONValue.get("pos") != null) {
-                        BlockPosDim BPDPos = (BlockPosDim)entry.getValue(); JSONObject JSONPos = new JSONObject();
+                    if (JSONValue.get("world") != null & JSONValue.get("pos") != null & JSONValue.get("dimension") != null) {
+                        JSONObject JSONPos = new JSONObject();
+                        BlockPosDim BPDPos = (BlockPosDim)entry.getValue();
+                        
                         BlockPos BPos = BPDPos.getPos();
-                        JSONPos.put("x", BPos.getX()); JSONPos.put("y", BPos.getY()); JSONPos.put("z", BPos.getZ());                     
+                        JSONPos.put("x",ObjectTools.asStringSafe(BPos.getX()));
+                        JSONPos.put("y",ObjectTools.asStringSafe(BPos.getY()));
+                        JSONPos.put("z",ObjectTools.asStringSafe(BPos.getZ()));
                         JSONValue.put("pos", JSONPos);
                     }
 
@@ -100,7 +103,7 @@ public class CmdStates extends CommandBase {
         JSONWebResponse.put("vars", JSONVars);
         JSONWebResponse.put("states", JSONStates);
         JSONWebResponse.put("pstates", JSONPStates);        
-        Data.webResponse = JSONWebResponse.toString();
+        Data.webResponse = JSONWebResponse.toString(4);
 
         ITextComponent component = new TextComponentString(TextFormatting.GREEN + "The e_states command has been executed.");
         if (sender instanceof EntityPlayer) {
