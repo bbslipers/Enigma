@@ -4,6 +4,11 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import mcjty.enigma.commands.CmdStates;
+import net.minecraft.server.MinecraftServer;
+import net.minecraft.command.ICommandSender;
+import net.minecraftforge.fml.common.FMLCommonHandler;
+
 public class Web extends Thread{
 
 	public Web() {
@@ -23,8 +28,10 @@ public class Web extends Thread{
 			while (true) {
 				try{
 					socket = ss.accept();
+					String args[] = new String[]{};
+					MinecraftServer server = FMLCommonHandler.instance().getMinecraftServerInstance();
+					new CmdStates().execute(server, server, args);
 					String myText = Data.webResponse;
-
 					String response = "HTTP/1.1 200 OK\r\n" +
 			                    "Server: Minecraft/Enigma\r\n" +
 			                    "Content-Type: application/json\r\n" +

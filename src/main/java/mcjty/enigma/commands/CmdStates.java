@@ -44,7 +44,6 @@ public class CmdStates extends CommandBase {
         JSONObject JSONPStates = new JSONObject();
         JSONObject JSONWebResponse = new JSONObject();
 
-        Enigma.setup.getLogger().info("Current status:");
         Progress progress = ProgressHolder.getProgress(server.getEntityWorld());
 
         for (Map.Entry<Integer, Integer> entry : progress.getStates().entrySet()) {
@@ -95,13 +94,18 @@ public class CmdStates extends CommandBase {
         JSONWebResponse.put("states", JSONStates);
         JSONWebResponse.put("pstates", JSONPStates);        
         Data.webResponse = JSONWebResponse.toString(4);
-        Enigma.setup.getLogger().info(Data.webResponse);
-
-        ITextComponent component = new TextComponentString(TextFormatting.GREEN + "The e_states command has been executed.");
-        if (sender instanceof EntityPlayer) {
-            ((EntityPlayer) sender).sendStatusMessage(component, false);
+        
+        if (server != sender) {
+            Enigma.setup.getLogger().info(Data.webResponse);
+            ITextComponent component = new TextComponentString(TextFormatting.GREEN + "The e_states command has been executed");
+            if (sender instanceof EntityPlayer) {
+                ((EntityPlayer) sender).sendStatusMessage(component, false);
+            } else {
+                sender.sendMessage(component);
+            }
         } else {
-            sender.sendMessage(component);
+            Enigma.setup.getLogger().info("The e_states command has been executed");
         }
+
     }
 }
