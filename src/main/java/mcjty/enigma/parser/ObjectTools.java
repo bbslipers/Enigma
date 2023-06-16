@@ -1,5 +1,8 @@
 package mcjty.enigma.parser;
 
+import org.json.JSONObject;
+import mcjty.enigma.varia.BlockPosDim;
+import net.minecraft.util.math.BlockPos;
 import static mcjty.enigma.varia.StringRegister.STRINGS;
 
 public class ObjectTools {
@@ -62,10 +65,26 @@ public class ObjectTools {
         } else if (o instanceof Boolean) {
             return ((Boolean) o) ? "true" : "false";
         } else if (o instanceof String) {
-            return (String) o;
+            return (String) o;          
         } else {
             return "";
         }
+    }
+
+    public static JSONObject asJsonSafe(Object o) {
+        JSONObject jo = new JSONObject();
+        if (o instanceof BlockPosDim) {
+            BlockPosDim pos = (BlockPosDim) o;
+            BlockPos bpos = pos.getPos();
+            JSONObject jpos = new JSONObject();          
+            jpos.put("x",asStringSafe(bpos.getX()));
+            jpos.put("y",asStringSafe(bpos.getY()));
+            jpos.put("z",asStringSafe(bpos.getZ()));
+            
+            jo.put("pos",jpos);
+            jo.put("dim",asStringSafe(pos.getDimension()));           
+        }
+        return jo;
     }
 
     public static Object add(Object o1, Object o2) {
