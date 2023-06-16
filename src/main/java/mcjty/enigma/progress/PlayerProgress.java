@@ -46,6 +46,10 @@ public class PlayerProgress {
         }
     }
 
+    public InternedKeyMap<Object> getNamedVariables() {
+        return namedVariables;
+    }
+    
     public void addNamedVariable(String name, Object value) {
         namedVariables.put(name, value);
     }

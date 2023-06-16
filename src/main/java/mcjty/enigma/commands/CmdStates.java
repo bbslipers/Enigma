@@ -50,7 +50,6 @@ public class CmdStates extends CommandBase {
         for (Map.Entry<Integer, Integer> entry : progress.getStates().entrySet()) {
             String name = STRINGS.get(entry.getKey());
             String value = STRINGS.get(entry.getValue());
-            Enigma.setup.getLogger().info("State: " + name + " = " + value);
             JSONStates.put(name, value);
         }
 
@@ -67,14 +66,23 @@ public class CmdStates extends CommandBase {
 
         for (Map.Entry<UUID, PlayerProgress> entry : progress.getPlayerProgress().entrySet()) {
             EntityPlayerMP player = server.getPlayerList().getPlayerByUUID(entry.getKey());
-            Enigma.setup.getLogger().info("Player: " + entry.getKey() + (player == null ? "" : (" (" + player.getDisplayNameString() + ")")));
             JSONObject JSONPlayerVars = new JSONObject();
             JSONObject JSONPlayerStates = new JSONObject();
             for (Map.Entry<Integer, Integer> pp : entry.getValue().getStates().entrySet()) {
                 String name = STRINGS.get(pp.getKey());
                 String value = STRINGS.get(pp.getValue());
-                Enigma.setup.getLogger().info("    State: " + name + " = " + value);
                 JSONPlayerStates.put(name, value);
+            }
+            for (Map.Entry<Integer, Object> pp : entry.getValue().getNamedVariables().entrySet()) {
+                String name = STRINGS.get(pp.getKey());
+                String value = ObjectTools.asStringSafe(pp.getValue());
+                JSONPlayerVars.put(name, value);
+                if (value == "") {
+                    JSONObject jsonvalue = ObjectTools.asJsonSafe(pp.getValue());
+                    JSONPlayerVars.put(name, jsonvalue);    
+                } else {
+                    JSONPlayerVars.put(name, value);    
+                }                
             }
             if (player != null) {
                 JSONPVars.put(player.getDisplayNameString(),JSONPlayerVars);                
@@ -83,9 +91,11 @@ public class CmdStates extends CommandBase {
         }
 
         JSONWebResponse.put("vars", JSONVars);
+        JSONWebResponse.put("pvars", JSONPVars);        
         JSONWebResponse.put("states", JSONStates);
         JSONWebResponse.put("pstates", JSONPStates);        
         Data.webResponse = JSONWebResponse.toString(4);
+        Enigma.setup.getLogger().info(Data.webResponse);
 
         ITextComponent component = new TextComponentString(TextFormatting.GREEN + "The e_states command has been executed.");
         if (sender instanceof EntityPlayer) {
